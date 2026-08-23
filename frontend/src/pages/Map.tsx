@@ -11,26 +11,6 @@ import { RefreshCw, PlayCircle } from 'lucide-react';
 import { RouteSimulator } from '../components/map/RouteSimulator';
 import 'leaflet/dist/leaflet.css';
 
-const MOCK_ROUTE: [number, number][] = [
-  [-23.5684, -46.6481],
-  [-23.5670, -46.6500],
-  [-23.5655, -46.6520],
-  [-23.5640, -46.6540],
-  [-23.5625, -46.6560],
-  [-23.5610, -46.6580],
-  [-23.5595, -46.6600],
-  [-23.5580, -46.6620],
-  [-23.5565, -46.6640],
-  [-23.5550, -46.6660],
-  [-23.5535, -46.6680],
-  [-23.5520, -46.6700],
-  [-23.5505, -46.6720],
-  [-23.5490, -46.6740],
-  [-23.5480, -46.6760],
-  [-23.5470, -46.6780],
-  [-23.5460, -46.6800],
-];
-
 // Fix default Leaflet icon issue
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -160,7 +140,6 @@ export function MapPage() {
           
           {isSimulating ? (
             <RouteSimulator 
-              route={MOCK_ROUTE} 
               isActive={isSimulating} 
               onClose={() => setIsSimulating(false)} 
             />
