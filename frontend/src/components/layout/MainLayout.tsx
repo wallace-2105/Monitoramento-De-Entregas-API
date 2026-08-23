@@ -2,12 +2,13 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
-import type { ConnectionStatus } from '../../types';
+import type { ConnectionStatus, WebSocketEvent } from '../../types';
 
 interface MainLayoutProps {
   connectionStatus: ConnectionStatus;
   messagesReceived: number;
   eventsCount: number;
+  events: WebSocketEvent[];
 }
 
 const pageTitles: Record<string, { title: string; breadcrumb: string }> = {
@@ -19,7 +20,7 @@ const pageTitles: Record<string, { title: string; breadcrumb: string }> = {
   '/configuracoes': { title: 'Configurações', breadcrumb: 'Sistema' },
 };
 
-export function MainLayout({ connectionStatus, messagesReceived, eventsCount }: MainLayoutProps) {
+export function MainLayout({ connectionStatus, messagesReceived, eventsCount, events }: MainLayoutProps) {
   const location = useLocation();
   const basePath = '/' + (location.pathname.split('/')[1] || '');
   const pageInfo = pageTitles[basePath] || pageTitles['/'];
@@ -35,6 +36,7 @@ export function MainLayout({ connectionStatus, messagesReceived, eventsCount }: 
           breadcrumb={pageInfo.breadcrumb}
           connectionStatus={connectionStatus}
           eventsCount={eventsCount}
+          events={events}
         />
 
         <main className="flex-1 p-6">

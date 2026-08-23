@@ -31,6 +31,7 @@ export default function App() {
                   connectionStatus={ws.status}
                   messagesReceived={ws.messagesReceived}
                   eventsCount={ws.events.length}
+                  events={ws.events}
                 />
               }
             >
