@@ -1,6 +1,7 @@
 import { Search, Bell, Wifi, WifiOff } from 'lucide-react';
 import type { ConnectionStatus } from '../../types';
 import { cn } from '../../lib/utils';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface TopbarProps {
   title: string;
@@ -11,6 +12,15 @@ interface TopbarProps {
 
 export function Topbar({ title, breadcrumb, connectionStatus, eventsCount }: TopbarProps) {
   const isConnected = connectionStatus === 'CONNECTED';
+  const { user } = useAuth();
+  
+  // Função para pegar as iniciais do nome (ex: Wallace Coimbra -> WC)
+  const getInitials = (name?: string) => {
+    if (!name) return 'OP';
+    const parts = name.trim().split(' ');
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
 
   return (
     <header
@@ -68,8 +78,10 @@ export function Topbar({ title, breadcrumb, connectionStatus, eventsCount }: Top
 
         {/* Avatar */}
         <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
-          style={{ background: 'var(--color-surface-3)', border: '1px solid var(--color-border-subtle)' }}>
-          OP
+          style={{ background: 'var(--color-surface-3)', border: '1px solid var(--color-border-subtle)' }}
+          title={user?.name || 'Operador'}
+        >
+          {getInitials(user?.name)}
         </div>
       </div>
     </header>
