@@ -6,6 +6,8 @@ import { deliveryService } from '../services/deliveryService';
 import { orderService } from '../services/orderService';
 import { driverService } from '../services/driverService';
 import { StatusBadge } from '../components/ui/StatusBadge';
+import { MotoboyForm } from '../components/forms/MotoboyForm';
+import { PedidoForm } from '../components/forms/PedidoForm';
 import type { EntregaResponse, PedidoResponse, EntregadorResponse } from '../types';
 import { StatusEntrega } from '../types';
 import { formatRelativeTime, cn } from '../lib/utils';
@@ -18,6 +20,8 @@ export function DeliveriesPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showMotoboyModal, setShowMotoboyModal] = useState(false);
+  const [showPedidoModal, setShowPedidoModal] = useState(false);
   const [newDelivery, setNewDelivery] = useState({ pedidoId: '', entregadorId: '' });
   const [actionLoading, setActionLoading] = useState<number | null>(null);
   const navigate = useNavigate();
@@ -97,10 +101,19 @@ export function DeliveriesPage() {
           <h2 className="text-xl font-bold text-slate-100">Gerenciamento de Entregas</h2>
           <p className="text-sm text-slate-500 mt-1">{deliveries.length} entregas registradas</p>
         </div>
-        <div className="flex gap-2">
-          <button onClick={loadData} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-colors" style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border-subtle)' }}>
+        <div className="flex flex-wrap gap-2 mt-3 sm:mt-0 justify-end">
+          <button onClick={loadData} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-colors" style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border-subtle)' }} title="Atualizar Dados">
             <RefreshCw size={14} />
           </button>
+          
+          <button onClick={() => setShowMotoboyModal(true)} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white transition-colors border border-slate-700 bg-slate-800/50">
+            Cadastrar Motoboy
+          </button>
+          
+          <button onClick={() => setShowPedidoModal(true)} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white transition-colors border border-slate-700 bg-slate-800/50">
+            Cadastrar Pedido
+          </button>
+
           <button onClick={() => setShowCreateModal(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors" style={{ background: 'var(--color-accent)' }}>
             <Plus size={14} />
             Nova Entrega
@@ -290,6 +303,18 @@ export function DeliveriesPage() {
           </motion.div>
         </div>
       )}
+
+      {/* Auxiliary Modals */}
+      <MotoboyForm 
+        isOpen={showMotoboyModal} 
+        onClose={() => setShowMotoboyModal(false)} 
+        onSuccess={loadData} 
+      />
+      <PedidoForm 
+        isOpen={showPedidoModal} 
+        onClose={() => setShowPedidoModal(false)} 
+        onSuccess={loadData} 
+      />
     </div>
   );
 }
