@@ -4,7 +4,7 @@ import L from 'leaflet';
 import { Play, Pause, Square, RotateCcw, Search, Loader2, MapPin, Navigation } from 'lucide-react';
 import { calculateDistanceKM } from '../../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { routingService, RouteInfo } from '../../services/routingService';
+import { routingService, type RouteInfo } from '../../services/routingService';
 import { toast } from 'sonner';
 
 const SIMULATION_SPEED = 1000; // ms per step
