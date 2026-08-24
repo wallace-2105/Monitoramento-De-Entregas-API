@@ -63,10 +63,10 @@ O ecossistema divide-se em um **Backend robusto em Java com Spring Boot** (respo
                         │     Spring WebSocket Broker     │
                         └───────┬─────────────────▲───────┘
                                 │                 │
-                   JPA & Driver │                 │ H2 In-Memory
-                                ▼                 │ DB (Dev)
+                   JPA & Driver │                 │ 
+                                ▼                 │
                         ┌─────────────────────────┴───────┐
-                        │       PostgreSQL / H2 DB        │
+                        │            PostgreSQL           │
                         └─────────────────────────────────┘
 ```
 
@@ -110,13 +110,14 @@ O ecossistema divide-se em um **Backend robusto em Java com Spring Boot** (respo
 
 1. Entre no diretório raiz do projeto.
 2. Certifique-se de configurar a variável `JAVA_HOME` para o JDK 21 se o terminal não o encontrar.
-3. A aplicação está configurada para usar **banco em memória H2** por padrão no desenvolvimento, eliminando a necessidade de instalar bancos de dados extras.
-4. Execute o Maven Wrapper:
+3. A aplicação agora está configurada para usar **PostgreSQL** por padrão. Você precisa ter o PostgreSQL instalado e rodando.
+4. Crie um banco de dados chamado `entregas_api` no seu pgAdmin.
+5. Se necessário, ajuste a senha no arquivo `src/main/resources/application.properties`.
+6. Execute o Maven Wrapper para iniciar a API:
    ```bash
    .\mvnw spring-boot:run
    ```
-5. A API estará pronta e escutando na porta **`http://localhost:8080`**.
-6. O console de visualização direta das tabelas do banco H2 fica disponível em `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:mem:entregas_api`).
+7. A API estará pronta e escutando na porta **`http://localhost:8080`**.
 
 ---
 
