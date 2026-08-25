@@ -2,6 +2,8 @@ package com.alexsander.monitoramento_entregas_api.service;
 
 import com.alexsander.monitoramento_entregas_api.dto.EntregaRequestDTO;
 import com.alexsander.monitoramento_entregas_api.dto.EntregaResponseDTO;
+import com.alexsander.monitoramento_entregas_api.exception.EstadoInvalidoException;
+import com.alexsander.monitoramento_entregas_api.exception.RegistroNotFoundException;
 import com.alexsander.monitoramento_entregas_api.model.*;
 import com.alexsander.monitoramento_entregas_api.repository.EntregaRepository;
 import com.alexsander.monitoramento_entregas_api.repository.EntregadorRepository;
@@ -11,13 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -35,24 +34,25 @@ public class EntregaService {
     @Transactional
     public EntregaResponseDTO criarEntrega(EntregaRequestDTO dto) {
         //Busca entregador e pedido pelo id e lança excessao caso nao encontrar
-        Entregador entregador = entregadorRepository.findById(dto.entregadorId()).orElseThrow(() -> new RuntimeException("Entregador não encontrado"));
-        Pedido pedido = pedidoRepository.findById(dto.pedidoId()).orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+        Entregador entregador = entregadorRepository.findById(dto.entregadorId()).
+                orElseThrow(() -> new RegistroNotFoundException("Entregador não encontrado"));
+        Pedido pedido = pedidoRepository.findById(dto.pedidoId()).orElseThrow(() -> new RegistroNotFoundException("Pedido não encontrado"));
 
         //verifica se pedido esta com status da entrega como: ENTREGUE ou CANCELADO
 
         if (pedido.getStatus() != StatusPedido.PENDENTE) {
-            throw new RuntimeException("Entrega não pode ser criada pois pedido esta: " + pedido.getStatus());
+            throw new EstadoInvalidoException("Entrega não pode ser criada pois pedido esta: " + pedido.getStatus());
         }
 
         //verifica se entregador esta com status de: EM_ENTREGA ou OFFLINE
         if (entregador.getStatus() != StatusEntregador.DISPONIVEL) {
-            throw new RuntimeException("Entregador não pode ser colocado nessa entrega pois esta: " + entregador.getStatus());
+            throw new EstadoInvalidoException("Entregador não pode ser colocado nessa entrega pois esta: " + entregador.getStatus());
         }
 
         boolean existeEntregaEmAberto = entregaRepository.existsByPedidoIdAndStatusIn(pedido.getId(), List.of(StatusEntrega.CRIADO, StatusEntrega.EM_ROTA));
 
         if (existeEntregaEmAberto) {
-            throw new RuntimeException("Já existe uma entrega em andamento para este pedido.");
+            throw new EstadoInvalidoException("Já existe uma entrega em andamento para este pedido.");
         }
 
         Entrega entrega = new Entrega();
@@ -74,15 +74,15 @@ public class EntregaService {
         Entregador entregador = entrega.getEntregador();
 
         if (entrega.getStatus() != StatusEntrega.CRIADO) {
-            throw new RuntimeException("Entrega não pode ser iniciada. Status atual da entrega: " + entrega.getStatus());
+            throw new EstadoInvalidoException("Entrega não pode ser iniciada. Status atual da entrega: " + entrega.getStatus());
         }
 
         if (pedido.getStatus() != StatusPedido.PENDENTE) {
-            throw new RuntimeException("Entrega não pode ser iniciada. Status atual do pedido: " + pedido.getStatus());
+            throw new EstadoInvalidoException("Entrega não pode ser iniciada. Status atual do pedido: " + pedido.getStatus());
         }
 
         if (entregador.getStatus() != StatusEntregador.DISPONIVEL) {
-            throw new RuntimeException("Entrega não pode ser iniciada. Status atual do entregador: " + entregador.getStatus());
+            throw new EstadoInvalidoException("Entrega não pode ser iniciada. Status atual do entregador: " + entregador.getStatus());
         }
 
         pedido.setStatus(StatusPedido.EM_ROTA);
@@ -105,11 +105,11 @@ public class EntregaService {
         Entregador entregador = entrega.getEntregador();
 
         if (entrega.getStatus() != StatusEntrega.EM_ROTA){
-            throw new RuntimeException("ERRO: Entrega só pode ser concluida se estiver status de EM_ROTA!");
+            throw new EstadoInvalidoException("Entrega só pode ser concluída se estiver status de EM_ROTA!");
         }
 
         if (pedido.getStatus() != StatusPedido.EM_ROTA){
-            throw new RuntimeException("ERRO: Pedido so pode ser concluido se estiver em status EM_ROTA!");
+            throw new EstadoInvalidoException("Pedido só pode ser concluído se estiver em status EM_ROTA!");
         }
 
         entrega.setStatus(StatusEntrega.ENTREGUE);
@@ -130,7 +130,7 @@ public class EntregaService {
         Entregador entregador = entrega.getEntregador();
 
         if (entrega.getStatus() != StatusEntrega.CRIADO) {
-            throw new RuntimeException("ERRO: Entrega esta com status diferente de CRIADO");
+            throw new EstadoInvalidoException("Entrega esta com status diferente de CRIADO");
         }
 
         entrega.setStatus(StatusEntrega.CANCELADO);
@@ -150,11 +150,11 @@ public class EntregaService {
         Entregador entregador = entrega.getEntregador();
 
         if (entrega.getStatus() != StatusEntrega.EM_ROTA){
-            throw new RuntimeException("Só entregas em rota pode ter falha");
+            throw new EstadoInvalidoException("Entrega não iniciada para registrar falha");
         }
 
         if (pedido.getStatus() != StatusPedido.EM_ROTA){
-            throw new RuntimeException("Só pedidos em rota que pode ter falha");
+            throw new EstadoInvalidoException("A entrega desse pedido não foi iniciada");
         }
 
         entrega.setStatus(StatusEntrega.FALHA);
@@ -178,6 +178,6 @@ public class EntregaService {
 
     private Entrega buscarOuFalhar(Long id){
         return entregaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Entrega não encontrada"));
+                .orElseThrow(() -> new RegistroNotFoundException("Entrega não encontrada"));
     }
 }

@@ -27,9 +27,9 @@ public class EntregaController {
 
     @PostMapping
     public ResponseEntity<EntregaResponseDTO> criarEntrega(@RequestBody @Valid EntregaRequestDTO dto, UriComponentsBuilder uriBuilder){
-       EntregaResponseDTO responseDTO = service.criarEntrega(dto);
-        var uri = uriBuilder.path("/entregas/{id}").buildAndExpand(responseDTO.entregaId()).toUri();
-        return ResponseEntity.created(uri).body(responseDTO);
+        var response = service.criarEntrega(dto);
+        var uri = uriBuilder.path("/entregas/{id}").buildAndExpand(response.entregaId()).toUri();
+        return ResponseEntity.created(uri).body(response);
     }
 
     @GetMapping

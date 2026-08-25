@@ -13,6 +13,7 @@ public class Pedido {
 
     private String cliente;
     private String enderecoEntrega;
+    private String cep;
 
     @Enumerated(EnumType.STRING)
     private StatusPedido status;
@@ -24,6 +25,14 @@ public class Pedido {
 
     public Long getId() {
         return id;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
+    }
+
+    public String getCep() {
+        return cep;
     }
 
     public void setId(Long id) {
@@ -60,5 +69,16 @@ public class Pedido {
 
     public void setDataCriacao(LocalDateTime dataCriacao) {
         this.dataCriacao = dataCriacao;
+    }
+
+    //metodo estatico criado para criar pedido no service
+    public static Pedido criar(String cliente, String enderecoEntrega,String cep) {
+        Pedido pedido = new Pedido();
+        pedido.cliente = cliente;
+        pedido.enderecoEntrega = enderecoEntrega;
+        pedido.cep = cep;
+        pedido.status = StatusPedido.PENDENTE;
+        pedido.dataCriacao = LocalDateTime.now();
+        return pedido;
     }
 }
