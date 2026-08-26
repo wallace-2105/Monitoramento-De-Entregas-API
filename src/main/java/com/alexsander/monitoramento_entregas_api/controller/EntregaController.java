@@ -2,11 +2,16 @@ package com.alexsander.monitoramento_entregas_api.controller;
 
 import com.alexsander.monitoramento_entregas_api.dto.EntregaRequestDTO;
 import com.alexsander.monitoramento_entregas_api.dto.EntregaResponseDTO;
-import com.alexsander.monitoramento_entregas_api.dto.EntregadorRequestDTO;
 import com.alexsander.monitoramento_entregas_api.service.EntregaService;
-import com.alexsander.monitoramento_entregas_api.service.EntregadorService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
@@ -14,42 +19,59 @@ import java.util.List;
 @RequestMapping("/entregas")
 public class EntregaController {
 
-    @Autowired
-    private EntregaService service;
+    private final EntregaService service;
+
+    public EntregaController(EntregaService service){
+        this.service = service;
+    }
 
     @PostMapping
-    public EntregaResponseDTO criarEntrega(@RequestBody EntregaRequestDTO dto){
-        return service.criarEntrega(dto);
+    public ResponseEntity<EntregaResponseDTO> criarEntrega(@RequestBody @Valid EntregaRequestDTO dto, UriComponentsBuilder uriBuilder){
+        var response = service.criarEntrega(dto);
+        var uri = uriBuilder.path("/entregas/{id}").buildAndExpand(response.entregaId()).toUri();
+        return ResponseEntity.created(uri).body(response);
     }
 
     @GetMapping
-    public List<EntregaResponseDTO> listarEntregas(){
-        return service.listarEntregas();
+    public ResponseEntity<Page<EntregaResponseDTO>> listarEntregas(@PageableDefault(size = 5, sort = {"dataInicio"}, direction = Sort.Direction.DESC)Pageable paginacao){
+        var page = service.listarEntregas(paginacao);
+        return ResponseEntity.ok(page);
+    }
+
+    @GetMapping("/ativas")
+    public ResponseEntity<List<EntregaResponseDTO>> listarEntregasAtivas(){
+        var response = service.listarEntregasAtivas();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public EntregaResponseDTO buscarEntregaPorId(@PathVariable Long id){
-        return service.buscarEntregaPorId(id);
+    public ResponseEntity<EntregaResponseDTO> buscarEntregaPorId(@PathVariable Long id){
+        var entrega = service.buscarEntregaPorId(id);
+        return ResponseEntity.ok(entrega);
     }
 
     @PutMapping("/{id}/iniciar")
-    public EntregaResponseDTO iniciarEntrega(@PathVariable Long id){
-        return service.iniciarEntrega(id);
+    public ResponseEntity<EntregaResponseDTO> iniciarEntrega(@PathVariable Long id){
+        var response = service.iniciarEntrega(id);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}/concluir")
-    public EntregaResponseDTO concluirEntrega(@PathVariable Long id){
-        return service.concluirEntrega(id);
+    public ResponseEntity<EntregaResponseDTO> concluirEntrega(@PathVariable Long id){
+        var response = service.concluirEntrega(id);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}/cancelar")
-    public EntregaResponseDTO cancelarEntrega(@PathVariable Long id){
-        return service.cancelarEntrega(id);
+    public ResponseEntity<EntregaResponseDTO> cancelarEntrega(@PathVariable Long id){
+        var response = service.cancelarEntrega(id);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}/falha")
-    public EntregaResponseDTO registrarFalhaNaEntrega(@PathVariable Long id){
-        return service.registrarFalhaNaEntrega(id);
+    public ResponseEntity<EntregaResponseDTO> registrarFalhaNaEntrega(@PathVariable Long id){
+        var response = service.registrarFalhaNaEntrega(id);
+        return ResponseEntity.ok(response);
     }
 
 

@@ -11,8 +11,8 @@ public class Localizacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String latitude;
-    private String longitude;
+    private Double latitude;
+    private Double longitude;
 
     private LocalDateTime dataHora;
 
@@ -27,19 +27,19 @@ public class Localizacao {
         this.id = id;
     }
 
-    public String getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
-    public String getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
@@ -57,5 +57,14 @@ public class Localizacao {
 
     public void setEntrega(Entrega entrega) {
         this.entrega = entrega;
+    }
+
+    public static Localizacao criar(Entrega entrega, Double latitude, Double  longitude){
+        Localizacao localizacao = new Localizacao();
+        localizacao.entrega = entrega;
+        localizacao.latitude = latitude;
+        localizacao.longitude = longitude;
+        localizacao.dataHora = LocalDateTime.now();
+        return localizacao;
     }
 }

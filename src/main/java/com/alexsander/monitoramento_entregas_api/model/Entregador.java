@@ -51,4 +51,12 @@ public class Entregador {
     public void setStatus(StatusEntregador status) {
         this.status = status;
     }
+
+    public static Entregador criar(String nome, String telefone){
+        Entregador entregador = new Entregador();
+        entregador.nome = nome;
+        entregador.telefone = telefone;
+        entregador.status = StatusEntregador.DISPONIVEL;
+        return entregador;
+    }
 }
