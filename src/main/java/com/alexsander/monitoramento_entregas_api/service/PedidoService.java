@@ -6,7 +6,6 @@ import com.alexsander.monitoramento_entregas_api.exception.RegistroNotFoundExcep
 import com.alexsander.monitoramento_entregas_api.model.Pedido;
 import com.alexsander.monitoramento_entregas_api.repository.PedidoRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,19 +14,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class PedidoService {
 
-    @Autowired
-    PedidoRepository repositorio;
+    private final PedidoRepository repository;
+
+    public PedidoService(PedidoRepository  repository){
+        this.repository = repository;
+    }
 
     @Transactional
     public PedidoResponseDTO criarPedido(PedidoRequestDTO dto) {
         //metodo criar na entidade ja setando o pedido pendente e a data de criacao
         Pedido pedido = Pedido.criar(dto.cliente(), dto.enderecoEntrega(), dto.cep());
-        Pedido pedidoSalvo = repositorio.save(pedido);
+        Pedido pedidoSalvo = repository.save(pedido);
         return new PedidoResponseDTO(pedidoSalvo);
     }
 
     public Page<PedidoResponseDTO> listarPedidos(Pageable paginacao) {
-        return repositorio.findAll(paginacao).map(PedidoResponseDTO::new);
+        return repository.findAll(paginacao).map(PedidoResponseDTO::new);
     }
 
     public PedidoResponseDTO buscarPedidoPorId(Long id) {
@@ -49,11 +51,11 @@ public class PedidoService {
     @Transactional
     public void deletarPedido(Long id) {
         Pedido pedido = buscarOuFalhar(id);
-        repositorio.delete(pedido);
+        repository.delete(pedido);
     }
 
     private Pedido buscarOuFalhar(Long id) {
-        return repositorio.findById(id)
+        return repository.findById(id)
                 .orElseThrow(() -> new RegistroNotFoundException("Pedido não encontrado"));
     }
 }

@@ -9,7 +9,6 @@ import com.alexsander.monitoramento_entregas_api.repository.EntregaRepository;
 import com.alexsander.monitoramento_entregas_api.repository.EntregadorRepository;
 import com.alexsander.monitoramento_entregas_api.repository.PedidoRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,14 +21,15 @@ import java.util.List;
 @Service
 public class EntregaService {
 
-    @Autowired
-    private EntregaRepository entregaRepository;
+    private final EntregaRepository entregaRepository;
+    private final PedidoRepository pedidoRepository;
+    private final EntregadorRepository entregadorRepository;
 
-    @Autowired
-    private PedidoRepository pedidoRepository;
-
-    @Autowired
-    private EntregadorRepository entregadorRepository;
+    public EntregaService(EntregadorRepository entregadorRepository, PedidoRepository pedidoRepository, EntregaRepository entregaRepository) {
+        this.entregaRepository = entregaRepository;
+        this.entregadorRepository = entregadorRepository;
+        this.pedidoRepository = pedidoRepository;
+    }
 
     @Transactional
     public EntregaResponseDTO criarEntrega(EntregaRequestDTO dto) {
@@ -98,18 +98,18 @@ public class EntregaService {
     }
 
     @Transactional
-    public EntregaResponseDTO concluirEntrega(Long id){
+    public EntregaResponseDTO concluirEntrega(Long id) {
         Entrega entrega = buscarOuFalhar(id);
 
         Pedido pedido = entrega.getPedido();
         Entregador entregador = entrega.getEntregador();
 
-        if (entrega.getStatus() != StatusEntrega.EM_ROTA){
-            throw new EstadoInvalidoException("Entrega só pode ser concluída se estiver status de EM_ROTA!");
+        if (entrega.getStatus() != StatusEntrega.EM_ROTA) {
+            throw new EstadoInvalidoException("Entrega só pode ser concluída se estiver com status: " + entrega.getStatus());
         }
 
-        if (pedido.getStatus() != StatusPedido.EM_ROTA){
-            throw new EstadoInvalidoException("Pedido só pode ser concluído se estiver em status EM_ROTA!");
+        if (pedido.getStatus() != StatusPedido.EM_ROTA) {
+            throw new EstadoInvalidoException("Pedido só pode ser concluído se estiver com status: " + entrega.getStatus());
         }
 
         entrega.setStatus(StatusEntrega.ENTREGUE);
@@ -143,17 +143,17 @@ public class EntregaService {
     }
 
     @Transactional
-    public EntregaResponseDTO registrarFalhaNaEntrega(Long id){
+    public EntregaResponseDTO registrarFalhaNaEntrega(Long id) {
         Entrega entrega = buscarOuFalhar(id);
 
         Pedido pedido = entrega.getPedido();
         Entregador entregador = entrega.getEntregador();
 
-        if (entrega.getStatus() != StatusEntrega.EM_ROTA){
+        if (entrega.getStatus() != StatusEntrega.EM_ROTA) {
             throw new EstadoInvalidoException("Entrega não iniciada para registrar falha");
         }
 
-        if (pedido.getStatus() != StatusPedido.EM_ROTA){
+        if (pedido.getStatus() != StatusPedido.EM_ROTA) {
             throw new EstadoInvalidoException("A entrega desse pedido não foi iniciada");
         }
 
@@ -164,20 +164,28 @@ public class EntregaService {
 
         Entrega entregaComFalha = entregaRepository.save(entrega);
 
-        return  new EntregaResponseDTO(entregaComFalha);
+        return new EntregaResponseDTO(entregaComFalha);
     }
 
-    public Page<EntregaResponseDTO> listarEntregas(Pageable paginacao){
+    public Page<EntregaResponseDTO> listarEntregas(Pageable paginacao) {
         return entregaRepository.findAll(paginacao).map(EntregaResponseDTO::new);
     }
 
-    public EntregaResponseDTO buscarEntregaPorId(Long id){
+    public List<EntregaResponseDTO> listarEntregasAtivas() {
+        return entregaRepository.findByStatus(StatusEntrega.EM_ROTA)
+                .stream()
+                .map(EntregaResponseDTO::new)
+                .toList();
+    }
+
+    public EntregaResponseDTO buscarEntregaPorId(Long id) {
         Entrega entrega = buscarOuFalhar(id);
         return new EntregaResponseDTO(entrega);
     }
 
-    private Entrega buscarOuFalhar(Long id){
+    private Entrega buscarOuFalhar(Long id) {
         return entregaRepository.findById(id)
                 .orElseThrow(() -> new RegistroNotFoundException("Entrega não encontrada"));
     }
+
 }

@@ -4,7 +4,6 @@ import com.alexsander.monitoramento_entregas_api.dto.PedidoRequestDTO;
 import com.alexsander.monitoramento_entregas_api.dto.PedidoResponseDTO;
 import com.alexsander.monitoramento_entregas_api.service.PedidoService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,14 +12,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/pedidos")
 public class PedidoController {
 
-    @Autowired
-    private  PedidoService service;
+    private final PedidoService service;
+
+    public PedidoController(PedidoService service){
+        this.service = service;
+    }
 
     @PostMapping
     public ResponseEntity<PedidoResponseDTO> criarPedido(@RequestBody @Valid PedidoRequestDTO dto, UriComponentsBuilder uriBuilder){
@@ -37,7 +37,7 @@ public class PedidoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PedidoResponseDTO> buscarPedidoPorId(@PathVariable Long id){
-        var pedido =service.buscarPedidoPorId(id);
+        var pedido = service.buscarPedidoPorId(id);
         return ResponseEntity.ok(pedido);
     }
 

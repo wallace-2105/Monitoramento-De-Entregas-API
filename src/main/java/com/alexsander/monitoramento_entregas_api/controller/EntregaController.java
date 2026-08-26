@@ -2,12 +2,9 @@ package com.alexsander.monitoramento_entregas_api.controller;
 
 import com.alexsander.monitoramento_entregas_api.dto.EntregaRequestDTO;
 import com.alexsander.monitoramento_entregas_api.dto.EntregaResponseDTO;
-
 import com.alexsander.monitoramento_entregas_api.service.EntregaService;
 
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,8 +19,11 @@ import java.util.List;
 @RequestMapping("/entregas")
 public class EntregaController {
 
-    @Autowired
-    private EntregaService service;
+    private final EntregaService service;
+
+    public EntregaController(EntregaService service){
+        this.service = service;
+    }
 
     @PostMapping
     public ResponseEntity<EntregaResponseDTO> criarEntrega(@RequestBody @Valid EntregaRequestDTO dto, UriComponentsBuilder uriBuilder){
@@ -36,6 +36,12 @@ public class EntregaController {
     public ResponseEntity<Page<EntregaResponseDTO>> listarEntregas(@PageableDefault(size = 5, sort = {"dataInicio"}, direction = Sort.Direction.DESC)Pageable paginacao){
         var page = service.listarEntregas(paginacao);
         return ResponseEntity.ok(page);
+    }
+
+    @GetMapping("/ativas")
+    public ResponseEntity<List<EntregaResponseDTO>> listarEntregasAtivas(){
+        var response = service.listarEntregasAtivas();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
