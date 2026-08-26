@@ -7,7 +7,8 @@ import { locationService } from '../services/locationService';
 import type { EntregaResponse, LocalizacaoResponse } from '../types';
 import { StatusEntrega } from '../types';
 import { statusEntregaConfig, cn } from '../lib/utils';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, PlayCircle } from 'lucide-react';
+import { RouteSimulator } from '../components/map/RouteSimulator';
 import 'leaflet/dist/leaflet.css';
 
 // Fix default Leaflet icon issue
@@ -60,6 +61,7 @@ interface DeliveryLocation {
 export function MapPage() {
   const [deliveryLocations, setDeliveryLocations] = useState<DeliveryLocation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSimulating, setIsSimulating] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -105,10 +107,23 @@ export function MapPage() {
           <h2 className="text-lg font-bold text-slate-100">Mapa de Rastreamento</h2>
           <p className="text-xs text-slate-500 mt-0.5">{deliveryLocations.length} entregas com localização</p>
         </div>
-        <button onClick={loadData} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-colors" style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border-subtle)' }}>
-          <RefreshCw size={14} className={cn(loading && 'animate-spin')} />
-          Atualizar
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setIsSimulating(!isSimulating)} 
+            className={cn(
+              "flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors",
+              isSimulating ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30" : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+            )}
+          >
+            <PlayCircle size={16} />
+            Simulador
+          </button>
+          
+          <button onClick={loadData} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-colors" style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border-subtle)' }}>
+            <RefreshCw size={14} className={cn(loading && 'animate-spin')} />
+            Atualizar
+          </button>
+        </div>
       </div>
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card overflow-hidden" style={{ height: 'calc(100vh - 220px)' }}>
@@ -122,34 +137,43 @@ export function MapPage() {
             attribution='&copy; <a href="https://carto.com/">CARTO</a>'
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           />
-          <MapBounds positions={positions} />
+          
+          {isSimulating ? (
+            <RouteSimulator 
+              isActive={isSimulating} 
+              onClose={() => setIsSimulating(false)} 
+            />
+          ) : (
+            <>
+              <MapBounds positions={positions} />
+              {deliveryLocations.map(dl => {
+                const lat = parseFloat(dl.location.latitude);
+                const lng = parseFloat(dl.location.longitude);
+                if (isNaN(lat) || isNaN(lng)) return null;
 
-          {deliveryLocations.map(dl => {
-            const lat = parseFloat(dl.location.latitude);
-            const lng = parseFloat(dl.location.longitude);
-            if (isNaN(lat) || isNaN(lng)) return null;
-
-            return (
-              <Marker
-                key={dl.delivery.id}
-                position={[lat, lng]}
-                icon={createStatusIcon(dl.delivery.status)}
-              >
-                <Popup>
-                  <div style={{ color: '#f1f5f9', minWidth: 160 }}>
-                    <p style={{ fontWeight: 600, marginBottom: 4 }}>Entrega #{dl.delivery.id}</p>
-                    <p style={{ fontSize: 12, color: '#94a3b8' }}>
-                      Status: {statusEntregaConfig[dl.delivery.status].label}
-                    </p>
-                    <p style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>
-                      Lat: {dl.location.latitude}<br />
-                      Lng: {dl.location.longitude}
-                    </p>
-                  </div>
-                </Popup>
-              </Marker>
-            );
-          })}
+                return (
+                  <Marker
+                    key={dl.delivery.id}
+                    position={[lat, lng]}
+                    icon={createStatusIcon(dl.delivery.status)}
+                  >
+                    <Popup>
+                      <div style={{ color: '#f1f5f9', minWidth: 160 }}>
+                        <p style={{ fontWeight: 600, marginBottom: 4 }}>Entrega #{dl.delivery.id}</p>
+                        <p style={{ fontSize: 12, color: '#94a3b8' }}>
+                          Status: {statusEntregaConfig[dl.delivery.status].label}
+                        </p>
+                        <p style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>
+                          Lat: {dl.location.latitude}<br />
+                          Lng: {dl.location.longitude}
+                        </p>
+                      </div>
+                    </Popup>
+                  </Marker>
+                );
+              })}
+            </>
+          )}
         </MapContainer>
       </motion.div>
     </div>
