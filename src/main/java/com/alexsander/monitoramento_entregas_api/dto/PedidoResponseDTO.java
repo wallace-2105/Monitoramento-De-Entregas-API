@@ -2,7 +2,7 @@ package com.alexsander.monitoramento_entregas_api.dto;
 
 import com.alexsander.monitoramento_entregas_api.model.Pedido;
 import com.alexsander.monitoramento_entregas_api.model.StatusPedido;
-import jakarta.validation.constraints.NotBlank;
+
 
 import java.time.LocalDateTime;
 
