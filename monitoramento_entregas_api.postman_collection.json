@@ -1,0 +1,2377 @@
+{
+  "info": {
+    "name": "Monitoramento Entregas API",
+    "description": "Coleção de testes REST (sucesso e erro) para Pedido, Entregador, Entrega e Localização. Endpoints STOMP (/app/entregas/{id}/localizacao) não estão aqui — precisam de um cliente WebSocket/STOMP (ex: extensão do Postman para WebSocket, ou o próprio frontend) para testar.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "pedidoId",
+      "value": ""
+    },
+    {
+      "key": "pedidoId2",
+      "value": ""
+    },
+    {
+      "key": "pedidoId3",
+      "value": ""
+    },
+    {
+      "key": "pedidoId4",
+      "value": ""
+    },
+    {
+      "key": "pedidoDescartavelId",
+      "value": ""
+    },
+    {
+      "key": "entregadorId",
+      "value": ""
+    },
+    {
+      "key": "entregadorId2",
+      "value": ""
+    },
+    {
+      "key": "entregadorId3",
+      "value": ""
+    },
+    {
+      "key": "entregadorId4",
+      "value": ""
+    },
+    {
+      "key": "entregadorDescartavelId",
+      "value": ""
+    },
+    {
+      "key": "entregaId",
+      "value": ""
+    },
+    {
+      "key": "entregaId2",
+      "value": ""
+    },
+    {
+      "key": "entregaId3",
+      "value": ""
+    },
+    {
+      "key": "entregaId4",
+      "value": ""
+    },
+    {
+      "key": "localizacaoId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Pedidos",
+      "item": [
+        {
+          "name": "Criar pedido 1 - sucesso",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pedidos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos"
+              ]
+            },
+            "description": "Cria o pedido principal, usado depois pela entrega principal.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente\": \"Maria Silva\",\n  \"enderecoEntrega\": \"Rua das Flores, 123\",\n  \"cep\": \"01310-100\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [201]\", function () {",
+                  "    pm.expect(pm.response.code === 201).to.be.true;",
+                  "});",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('pedidoId', jsonData.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar pedido 2 - sucesso (p/ concluir sem iniciar)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pedidos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente\": \"João Souza\",\n  \"enderecoEntrega\": \"Av. Paulista, 900\",\n  \"cep\": \"01310-000\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [201]\", function () {",
+                  "    pm.expect(pm.response.code === 201).to.be.true;",
+                  "});",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('pedidoId2', jsonData.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar pedido 3 - sucesso (p/ cancelar)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pedidos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente\": \"Ana Costa\",\n  \"enderecoEntrega\": \"Rua Augusta, 500\",\n  \"cep\": \"01305-000\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [201]\", function () {",
+                  "    pm.expect(pm.response.code === 201).to.be.true;",
+                  "});",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('pedidoId3', jsonData.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar pedido 4 - sucesso (p/ falha)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pedidos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente\": \"Pedro Lima\",\n  \"enderecoEntrega\": \"Rua Oscar Freire, 200\",\n  \"cep\": \"01426-000\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [201]\", function () {",
+                  "    pm.expect(pm.response.code === 201).to.be.true;",
+                  "});",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('pedidoId4', jsonData.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar pedido descartável - sucesso (p/ deletar)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pedidos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente\": \"Cliente Descartável\",\n  \"enderecoEntrega\": \"Rua Teste, 1\",\n  \"cep\": \"00000-000\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [201]\", function () {",
+                  "    pm.expect(pm.response.code === 201).to.be.true;",
+                  "});",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('pedidoDescartavelId', jsonData.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar pedido - erro (campos vazios)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pedidos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente\": \"\",\n  \"enderecoEntrega\": \"\",\n  \"cep\": \"\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [400]\", function () {",
+                  "    pm.expect(pm.response.code === 400).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar pedido - erro (CEP em formato inválido)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pedidos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente\": \"Cliente X\",\n  \"enderecoEntrega\": \"Rua Y, 10\",\n  \"cep\": \"abc-123\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [400]\", function () {",
+                  "    pm.expect(pm.response.code === 400).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar pedidos - sucesso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/pedidos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar pedido por id - sucesso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/pedidos/{{pedidoId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos",
+                "{{pedidoId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar pedido por id - erro (não existe)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/pedidos/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos",
+                "999999"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [404]\", function () {",
+                  "    pm.expect(pm.response.code === 404).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Atualizar pedido - sucesso",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pedidos/{{pedidoId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos",
+                "{{pedidoId}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente\": \"Maria Silva Atualizada\",\n  \"enderecoEntrega\": \"Rua das Flores, 456\",\n  \"cep\": \"01310-100\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200, 202]\", function () {",
+                  "    pm.expect(pm.response.code === 200 || pm.response.code === 202).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Atualizar pedido - erro (CEP inválido)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pedidos/{{pedidoId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos",
+                "{{pedidoId}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente\": \"Maria Silva\",\n  \"enderecoEntrega\": \"Rua das Flores, 123\",\n  \"cep\": \"123\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [400]\", function () {",
+                  "    pm.expect(pm.response.code === 400).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Atualizar pedido - erro (id não existe)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pedidos/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos",
+                "999999"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente\": \"Alguém\",\n  \"enderecoEntrega\": \"Rua Y, 1\",\n  \"cep\": \"01310-100\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [404]\", function () {",
+                  "    pm.expect(pm.response.code === 404).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Deletar pedido descartável - sucesso",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/pedidos/{{pedidoDescartavelId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos",
+                "{{pedidoDescartavelId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [204]\", function () {",
+                  "    pm.expect(pm.response.code === 204).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Deletar pedido - erro (já deletado / não existe)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/pedidos/{{pedidoDescartavelId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos",
+                "{{pedidoDescartavelId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [404]\", function () {",
+                  "    pm.expect(pm.response.code === 404).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Entregadores",
+      "item": [
+        {
+          "name": "Criar entregador 1 - sucesso",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregadores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregadores"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Carlos Motoboy\",\n  \"telefone\": \"11999990001\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [201]\", function () {",
+                  "    pm.expect(pm.response.code === 201).to.be.true;",
+                  "});",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('entregadorId', jsonData.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar entregador 2 - sucesso",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregadores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregadores"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Fernanda Motoboy\",\n  \"telefone\": \"11999990002\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [201]\", function () {",
+                  "    pm.expect(pm.response.code === 201).to.be.true;",
+                  "});",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('entregadorId2', jsonData.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar entregador 3 - sucesso",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregadores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregadores"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Bruno Motoboy\",\n  \"telefone\": \"11999990003\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [201]\", function () {",
+                  "    pm.expect(pm.response.code === 201).to.be.true;",
+                  "});",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('entregadorId3', jsonData.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar entregador 4 - sucesso",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregadores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregadores"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Lucas Motoboy\",\n  \"telefone\": \"11999990004\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [201]\", function () {",
+                  "    pm.expect(pm.response.code === 201).to.be.true;",
+                  "});",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('entregadorId4', jsonData.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar entregador descartável - sucesso (p/ deletar)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregadores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregadores"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Descartável\",\n  \"telefone\": \"11900000000\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [201]\", function () {",
+                  "    pm.expect(pm.response.code === 201).to.be.true;",
+                  "});",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('entregadorDescartavelId', jsonData.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar entregador - erro (campos vazios)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregadores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregadores"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"\",\n  \"telefone\": \"\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [400]\", function () {",
+                  "    pm.expect(pm.response.code === 400).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar entregadores - sucesso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregadores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregadores"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar entregador por id - sucesso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregadores/{{entregadorId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregadores",
+                "{{entregadorId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar entregador por id - erro (não existe)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregadores/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregadores",
+                "999999"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [404]\", function () {",
+                  "    pm.expect(pm.response.code === 404).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Atualizar entregador - sucesso",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregadores/{{entregadorId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregadores",
+                "{{entregadorId}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Carlos Motoboy Atualizado\",\n  \"telefone\": \"11999990009\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Atualizar entregador - erro (campos vazios)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregadores/{{entregadorId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregadores",
+                "{{entregadorId}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"\",\n  \"telefone\": \"\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [400]\", function () {",
+                  "    pm.expect(pm.response.code === 400).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Atualizar entregador - erro (id não existe)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregadores/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregadores",
+                "999999"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Alguém\",\n  \"telefone\": \"11900000000\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [404]\", function () {",
+                  "    pm.expect(pm.response.code === 404).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Deletar entregador descartável - sucesso",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregadores/{{entregadorDescartavelId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregadores",
+                "{{entregadorDescartavelId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [204]\", function () {",
+                  "    pm.expect(pm.response.code === 204).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Deletar entregador - erro (já deletado / não existe)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregadores/{{entregadorDescartavelId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregadores",
+                "{{entregadorDescartavelId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [404]\", function () {",
+                  "    pm.expect(pm.response.code === 404).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Entregas",
+      "item": [
+        {
+          "name": "Criar entrega 1 - sucesso (fluxo principal)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas"
+              ]
+            },
+            "description": "Fluxo principal: vai ser iniciada, receber localizações, e depois concluída.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pedidoId\": \"{{pedidoId}}\",\n  \"entregadorId\": \"{{entregadorId}}\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [201]\", function () {",
+                  "    pm.expect(pm.response.code === 201).to.be.true;",
+                  "});",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('entregaId', jsonData.entregaId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar entrega 2 - sucesso (p/ concluir sem iniciar)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pedidoId\": \"{{pedidoId2}}\",\n  \"entregadorId\": \"{{entregadorId2}}\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [201]\", function () {",
+                  "    pm.expect(pm.response.code === 201).to.be.true;",
+                  "});",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('entregaId2', jsonData.entregaId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar entrega 3 - sucesso (p/ cancelar)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pedidoId\": \"{{pedidoId3}}\",\n  \"entregadorId\": \"{{entregadorId3}}\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [201]\", function () {",
+                  "    pm.expect(pm.response.code === 201).to.be.true;",
+                  "});",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('entregaId3', jsonData.entregaId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar entrega 4 - sucesso (p/ falha)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pedidoId\": \"{{pedidoId4}}\",\n  \"entregadorId\": \"{{entregadorId4}}\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [201]\", function () {",
+                  "    pm.expect(pm.response.code === 201).to.be.true;",
+                  "});",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('entregaId4', jsonData.entregaId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar entrega - erro (pedidoId/entregadorId nulos)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pedidoId\": null,\n  \"entregadorId\": null\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [400]\", function () {",
+                  "    pm.expect(pm.response.code === 400).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar entrega - erro (pedido não existe)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pedidoId\": 999999,\n  \"entregadorId\": \"{{entregadorId}}\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [404]\", function () {",
+                  "    pm.expect(pm.response.code === 404).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar entrega - erro (entregador não existe)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pedidoId\": \"{{pedidoId}}\",\n  \"entregadorId\": 999999\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [404]\", function () {",
+                  "    pm.expect(pm.response.code === 404).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar entregas (paginado) - sucesso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar entregas ativas - sucesso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregas/ativas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas",
+                "ativas"
+              ]
+            },
+            "description": "Deve devolver só entregas EM_ROTA. Rode depois de iniciar pelo menos uma entrega para ver resultado não-vazio."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar entrega por id - sucesso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregas/{{entregaId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas",
+                "{{entregaId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar entrega por id - erro (não existe)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregas/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas",
+                "999999"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [404]\", function () {",
+                  "    pm.expect(pm.response.code === 404).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Iniciar entrega 1 - sucesso",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregas/{{entregaId}}/iniciar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas",
+                "{{entregaId}}",
+                "iniciar"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Iniciar entrega 1 - erro (já está EM_ROTA)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregas/{{entregaId}}/iniciar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas",
+                "{{entregaId}}",
+                "iniciar"
+              ]
+            },
+            "description": "Rodar depois do 'Iniciar entrega 1 - sucesso'. Deve falhar por estado inválido."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [400, 409]\", function () {",
+                  "    pm.expect(pm.response.code === 400 || pm.response.code === 409).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Iniciar entrega 3 - sucesso (setup p/ cancelar)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregas/{{entregaId3}}/iniciar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas",
+                "{{entregaId3}}",
+                "iniciar"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Iniciar entrega 4 - sucesso (setup p/ falha)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregas/{{entregaId4}}/iniciar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas",
+                "{{entregaId4}}",
+                "iniciar"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Concluir entrega 2 - erro (nunca foi iniciada)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregas/{{entregaId2}}/concluir",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas",
+                "{{entregaId2}}",
+                "concluir"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [400, 409]\", function () {",
+                  "    pm.expect(pm.response.code === 400 || pm.response.code === 409).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancelar entrega 3 - sucesso",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregas/{{entregaId3}}/cancelar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas",
+                "{{entregaId3}}",
+                "cancelar"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancelar entrega 3 - erro (já cancelada)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregas/{{entregaId3}}/cancelar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas",
+                "{{entregaId3}}",
+                "cancelar"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [400, 409]\", function () {",
+                  "    pm.expect(pm.response.code === 400 || pm.response.code === 409).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar falha na entrega 4 - sucesso",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregas/{{entregaId4}}/falha",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas",
+                "{{entregaId4}}",
+                "falha"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Concluir entrega 1 - sucesso",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregas/{{entregaId}}/concluir",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas",
+                "{{entregaId}}",
+                "concluir"
+              ]
+            },
+            "description": "Rodar por último, depois de já ter testado as localizações na entrega 1 (ela precisa estar EM_ROTA para aceitar localização)."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Concluir entrega 1 - erro (já concluída)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/entregas/{{entregaId}}/concluir",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entregas",
+                "{{entregaId}}",
+                "concluir"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [400, 409]\", function () {",
+                  "    pm.expect(pm.response.code === 400 || pm.response.code === 409).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Localizações (REST)",
+      "item": [
+        {
+          "name": "Criar localização - sucesso (entrega 1 EM_ROTA)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/localizacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "localizacoes"
+              ]
+            },
+            "description": "Rodar depois de 'Iniciar entrega 1' e antes de 'Concluir entrega 1'.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entregaId\": \"{{entregaId}}\",\n  \"latitude\": -23.561414,\n  \"longitude\": -46.655881\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [201]\", function () {",
+                  "    pm.expect(pm.response.code === 201).to.be.true;",
+                  "});",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('localizacaoId', jsonData.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar localização - erro (entrega 2 não está EM_ROTA)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/localizacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "localizacoes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entregaId\": \"{{entregaId2}}\",\n  \"latitude\": -23.561,\n  \"longitude\": -46.655\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [400, 409]\", function () {",
+                  "    pm.expect(pm.response.code === 400 || pm.response.code === 409).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar localização - erro (entrega não existe)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/localizacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "localizacoes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entregaId\": 999999,\n  \"latitude\": -23.561,\n  \"longitude\": -46.655\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [404]\", function () {",
+                  "    pm.expect(pm.response.code === 404).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar localização - erro (latitude fora do intervalo)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/localizacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "localizacoes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entregaId\": \"{{entregaId}}\",\n  \"latitude\": 200.0,\n  \"longitude\": -46.655\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [400]\", function () {",
+                  "    pm.expect(pm.response.code === 400).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar localização - erro (longitude fora do intervalo)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/localizacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "localizacoes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entregaId\": \"{{entregaId}}\",\n  \"latitude\": -23.561,\n  \"longitude\": -300.0\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [400]\", function () {",
+                  "    pm.expect(pm.response.code === 400).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar localização - erro (campos nulos)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/localizacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "localizacoes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entregaId\": \"{{entregaId}}\",\n  \"latitude\": null,\n  \"longitude\": null\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [400]\", function () {",
+                  "    pm.expect(pm.response.code === 400).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar localizações - sucesso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/localizacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "localizacoes"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar localização por id - sucesso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/localizacoes/{{localizacaoId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "localizacoes",
+                "{{localizacaoId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar localização por id - erro (não existe)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/localizacoes/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "localizacoes",
+                "999999"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [404]\", function () {",
+                  "    pm.expect(pm.response.code === 404).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar localizações por entrega - sucesso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/localizacoes/entrega/{{entregaId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "localizacoes",
+                "entrega",
+                "{{entregaId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [200]\", function () {",
+                  "    pm.expect(pm.response.code === 200).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar localizações por entrega - erro (entrega não existe)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/localizacoes/entrega/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "localizacoes",
+                "entrega",
+                "999999"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code é [404]\", function () {",
+                  "    pm.expect(pm.response.code === 404).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
