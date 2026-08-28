@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Package, Loader2 } from 'lucide-react';
-import { apiService, Entregador, Pedido } from '../../services/apiService';
+import { apiService } from '../../services/apiService';
+import type { Entregador, Pedido } from '../../services/apiService';
 import { toast } from 'sonner';
 
 interface EntregaFormProps {
