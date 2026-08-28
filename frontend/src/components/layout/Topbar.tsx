@@ -124,18 +124,18 @@ export function Topbar({ title, breadcrumb, connectionStatus, eventsCount, event
                         <div className="flex items-start gap-3">
                           <div className={cn(
                             "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold",
-                            event.tipo === 'STATUS_ENTREGA' ? 'bg-blue-500/10 text-blue-400' :
-                            event.tipo === 'ALERTA' ? 'bg-rose-500/10 text-rose-400' : 'bg-emerald-500/10 text-emerald-400'
+                            event.type === 'status' ? 'bg-blue-500/10 text-blue-400' :
+                            event.type === 'error' ? 'bg-rose-500/10 text-rose-400' : 'bg-emerald-500/10 text-emerald-400'
                           )}>
-                            {event.tipo === 'STATUS_ENTREGA' ? '📦' : event.tipo === 'ALERTA' ? '⚠️' : '📍'}
+                            {event.type === 'status' ? '📦' : event.type === 'error' ? '⚠️' : '📍'}
                           </div>
                           <div>
                             <p className="text-sm text-slate-300 line-clamp-2">
-                              {event.tipo === 'STATUS_ENTREGA' && `Entrega #${event.entregaId}: Status atualizado`}
-                              {event.tipo === 'LOCALIZACAO' && `Entrega #${event.entregaId}: Nova localização`}
-                              {event.tipo === 'ALERTA' && `Alerta: ${event.dados || 'Erro reportado'}`}
+                              {event.type === 'status' && `Entrega #${event.entregaId}: Status atualizado`}
+                              {event.type === 'location' && `Entrega #${event.entregaId}: Nova localização`}
+                              {event.type === 'error' && `Alerta: ${event.message || 'Erro reportado'}`}
                             </p>
-                            <span className="text-[10px] text-slate-500">{formatRelativeTime(event.timestamp)}</span>
+                            <span className="text-[10px] text-slate-500">{formatRelativeTime(String(event.timestamp))}</span>
                           </div>
                         </div>
                       </div>
