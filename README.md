@@ -142,4 +142,4 @@ O ecossistema divide-se em um **Backend robusto em Java com Spring Boot** (respo
 
 ## 🧑‍💻 Autores
 - **Alexsander Santos** -  Desenvolvedor & Mantenedor [LinkedIn](https://www.linkedin.com/in/alexsander-santos-b010051b5)
-- **Wallace Coimbra ** - Desenvolvedor & Mantenedor [LinkedIn](www.linkedin.com/in/wallace-coimbra2105)
+- **Wallace Coimbra** - Desenvolvedor & Mantenedor [LinkedIn](www.linkedin.com/in/wallace-coimbra2105)
